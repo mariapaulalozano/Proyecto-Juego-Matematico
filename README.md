@@ -27,4 +27,4 @@ Autor
 
 Enlace publicado en Render
 
-[URL del proyecto desplegado en Render]
+[https://proyecto-juego-matematico.onrender.com]
