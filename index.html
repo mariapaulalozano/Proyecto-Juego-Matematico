@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MathQuiz - Juego de Matemáticas</title>
+
+<style>
+  /* ============ RESET Y VARIABLES ============ */
+  :root {
+    --morado: #7C3AED;
+    --azul-oscuro: #0F172A;
+    --blanco: #FFFFFF;
+    --gris-claro: #F3F4F6;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
+
+  body {
+    background-color: var(--gris-claro);
+    color: var(--azul-oscuro);
+    line-height: 1.6;
+  }
+
+  /* ============ ENCABEZADO ============ */
+  header {
+    background-color: var(--azul-oscuro);
+    color: var(--blanco);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  header h1 {
+    color: var(--morado);
+    font-size: 1.8rem;
+  }
+
+  nav ul {
+    list-style: none;
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  nav ul li a {
+    color: var(--blanco);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+  }
+
+  nav ul li a:hover {
+    color: var(--morado);
+  }
+
+  /* ============ SECCIÓN PRINCIPAL ============ */
+  .hero {
+    text-align: center;
+    padding: 3rem 1rem 2rem;
+    background: linear-gradient(135deg, var(--azul-oscuro), #1e293b);
+    color: var(--blanco);
+  }
+
+  .hero h2 {
+    font-size: 1.8rem;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  /* ============ CONTENEDOR GENERAL ============ */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+
+  /* ============ TARJETAS DE DIFICULTAD ============ */
+  .dificultad-section h3,
+  .juego-section h3 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: var(--azul-oscuro);
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .card {
+    background-color: var(--blanco);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    transition: transform 0.2s, border-color 0.2s;
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+  }
+
+  .card.selected {
+    border-color: var(--morado);
+    background-color: #f5f0ff;
+  }
+
+  .card h4 {
+    color: var(--morado);
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+  }
+
+  .card p {
+    font-size: 0.9rem;
+    color: #4b5563;
+  }
+
+  /* ============ BOTONES ============ */
+  .btn {
+    display: block;
+    margin: 2rem auto 0;
+    background-color: var(--morado);
+    color: var(--blanco);
+    border: none;
+    padding: 0.9rem 2rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .btn:hover {
+    background-color: #6524d1;
+  }
+
+  .btn-secundario {
+    background-color: var(--azul-oscuro);
+  }
+
+  .btn-secundario:hover {
+    background-color: #1e293b;
+  }
+
+  /* ============ SECCIÓN DE JUEGO ============ */
+  .juego-section {
+    display: none;
+    background-color: var(--blanco);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    text-align: center;
+  }
+
+  .info-juego {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+  }
+
+  .info-item {
+    background-color: var(--gris-claro);
+    padding: 0.8rem 1.2rem;
+    border-radius: 8px;
+    min-width: 120px;
+  }
+
+  .info-item span {
+    display: block;
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: var(--morado);
+  }
+
+  .operacion {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--azul-oscuro);
+    margin: 1.5rem 0;
+  }
+
+  #respuesta {
+    padding: 0.8rem;
+    font-size: 1.2rem;
+    width: 200px;
+    text-align: center;
+    border: 2px solid var(--morado);
+    border-radius: 8px;
+    outline: none;
+  }
+
+  /* ============ SECCIÓN DE RESULTADOS ============ */
+  .resultado-section {
+    display: none;
+    background-color: var(--blanco);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    text-align: center;
+  }
+
+  .resultado-section h3 {
+    color: var(--morado);
+    margin-bottom: 1rem;
+    font-size: 1.6rem;
+  }
+
+  .resultado-datos {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+
+  .resultado-datos .item {
+    background-color: var(--gris-claro);
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    min-width: 140px;
+  }
+
+  .resultado-datos .item span {
+    display: block;
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: var(--azul-oscuro);
+  }
+
+  /* ============ PIE DE PÁGINA ============ */
+  footer {
+    background-color: var(--azul-oscuro);
+    color: var(--blanco);
+    text-align: center;
+    padding: 1.5rem;
+    margin-top: 2rem;
+    font-size: 0.9rem;
+  }
+
+  footer a {
+    color: var(--morado);
+    text-decoration: none;
+  }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 600px) {
+    header {
+      flex-direction: column;
+      gap: 0.8rem;
+      text-align: center;
+    }
+
+    .operacion {
+      font-size: 2rem;
+    }
+
+    #respuesta {
+      width: 100%;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <!-- ============ ENCABEZADO ============ -->
+  <header>
+    <h1>🧮 MathQuiz</h1>
+    <nav>
+      <ul>
+        <li><a href="#inicio">Inicio</a></li>
+        <li><a href="#como-jugar">Cómo jugar</a></li>
+        <li><a href="#puntuacion">Puntuación</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- ============ SECCIÓN PRINCIPAL ============ -->
+  <section class="hero" id="inicio">
+    <h2>Pon a prueba tu agilidad mental resolviendo operaciones matemáticas</h2>
+  </section>
+
+  <div class="container">
+
+    <!-- ============ SECCIÓN DE DIFICULTAD ============ -->
+    <section class="dificultad-section" id="como-jugar">
+      <h3>Selecciona un nivel de dificultad</h3>
+      <div class="cards">
+        <div class="card" data-nivel="facil">
+          <h4>Fácil</h4>
+          <p>Sumas y restas del 1 al 10</p>
+        </div>
+        <div class="card" data-nivel="medio">
+          <h4>Medio</h4>
+          <p>Sumas, restas y multiplicaciones del 1 al 20</p>
+        </div>
+        <div class="card" data-nivel="dificil">
+          <h4>Difícil</h4>
+          <p>Multiplicaciones y divisiones del 1 al 50</p>
+        </div>
+      </div>
+
+      <button class="btn" id="btnComenzar">Comenzar juego</button>
+    </section>
+
+    <!-- ============ SECCIÓN DE JUEGO ============ -->
+    <section class="juego-section" id="juego">
+      <h3>¡Responde antes de que se acabe el tiempo!</h3>
+
+      <div class="info-juego" id="puntuacion">
+        <div class="info-item">
+          Tiempo
+          <span id="tiempo">30</span>
+        </div>
+        <div class="info-item">
+          Puntaje
+          <span id="puntaje">0</span>
+        </div>
+        <div class="info-item">
+          Preguntas
+          <span id="preguntas">0</span>
+        </div>
+      </div>
+
+      <div class="operacion" id="operacion">0 + 0</div>
+
+      <input type="number" id="respuesta" placeholder="Tu respuesta">
+      <button class="btn" id="btnResponder">Responder</button>
+    </section>
+
+    <!-- ============ SECCIÓN DE RESULTADOS ============ -->
+    <section class="resultado-section" id="resultados">
+      <h3>Resultados finales</h3>
+
+      <div class="resultado-datos">
+        <div class="item">
+          Puntaje final
+          <span id="resPuntaje">0</span>
+        </div>
+        <div class="item">
+          Correctas
+          <span id="resCorrectas">0</span>
+        </div>
+        <div class="item">
+          Incorrectas
+          <span id="resIncorrectas">0</span>
+        </div>
+      </div>
+
+      <button class="btn btn-secundario" id="btnReintentar">Volver a intentar</button>
+    </section>
+
+  </div>
+
+  <!-- ============ PIE DE PÁGINA ============ -->
+  <footer>
+    <p>MathQuiz &copy; 2026 | Proyecto educativo de programación básica</p>
+    <p>Contacto: <a href="mailto:contacto@mathquiz.com">contacto@mathquiz.com</a> | Tel: 300 123 4567</p>
+  </footer>
+
+  <script>
+    // ============================================
+    // VARIABLES GLOBALES DEL JUEGO
+    // ============================================
+    let nivelSeleccionado = null;   // Nivel de dificultad elegido
+    let numero1 = 0;                // Primer número de la operación
+    let numero2 = 0;                // Segundo número de la operación
+    let operador = '+';             // Operador matemático actual
+    let respuestaCorrecta = 0;      // Resultado correcto de la operación
+    let puntaje = 0;                // Puntaje acumulado
+    let totalPreguntas = 0;         // Contador de preguntas respondidas
+    let correctas = 0;              // Contador de respuestas correctas
+    let incorrectas = 0;            // Contador de respuestas incorrectas
+    let tiempoRestante = 30;        // Tiempo del cronómetro en segundos
+    let intervaloTiempo = null;     // Referencia al setInterval del cronómetro
+
+    // ============================================
+    // REFERENCIAS A ELEMENTOS DEL DOM
+    // ============================================
+    const cards = document.querySelectorAll('.card');
+    const btnComenzar = document.getElementById('btnComenzar');
+    const btnResponder = document.getElementById('btnResponder');
+    const btnReintentar = document.getElementById('btnReintentar');
+
+    const seccionDificultad = document.querySelector('.dificultad-section');
+    const seccionJuego = document.getElementById('juego');
+    const seccionResultados = document.getElementById('resultados');
+
+    const operacionEl = document.getElementById('operacion');
+    const respuestaInput = document.getElementById('respuesta');
+    const tiempoEl = document.getElementById('tiempo');
+    const puntajeEl = document.getElementById('puntaje');
+    const preguntasEl = document.getElementById('preguntas');
+
+    const resPuntajeEl = document.getElementById('resPuntaje');
+    const resCorrectasEl = document.getElementById('resCorrectas');
+    const resIncorrectasEl = document.getElementById('resIncorrectas');
+
+    // ============================================
+    // SELECCIÓN DE NIVEL DE DIFICULTAD
+    // ============================================
+    cards.forEach(card => {
+      card.addEventListener('click', () => {
+        // Quitar selección previa de todas las tarjetas
+        cards.forEach(c => c.classList.remove('selected'));
+        // Marcar la tarjeta seleccionada
+        card.classList.add('selected');
+        nivelSeleccionado = card.getAttribute('data-nivel');
+      });
+    });
+
+    // ============================================
+    // BOTÓN "COMENZAR JUEGO"
+    // ============================================
+    btnComenzar.addEventListener('click', () => {
+      // Validar que se haya seleccionado un nivel de dificultad
+      if (!nivelSeleccionado) {
+        alert('Por favor selecciona un nivel de dificultad antes de comenzar.');
+        return;
+      }
+
+      // Reiniciar variables del juego
+      puntaje = 0;
+      totalPreguntas = 0;
+      correctas = 0;
+      incorrectas = 0;
+      tiempoRestante = 30;
+
+      actualizarInterfazJuego();
+
+      // Cambiar de sección: ocultar dificultad, mostrar juego
+      seccionDificultad.style.display = 'none';
+      seccionResultados.style.display = 'none';
+      seccionJuego.style.display = 'block';
+
+      generarOperacion();
+      iniciarCronometro();
+    });
+
+    // ============================================
+    // GENERAR OPERACIÓN MATEMÁTICA SEGÚN NIVEL
+    // ============================================
+    function generarOperacion() {
+      if (nivelSeleccionado === 'facil') {
+        // Sumas y restas del 1 al 10
+        numero1 = Math.floor(Math.random() * 10) + 1;
+        numero2 = Math.floor(Math.random() * 10) + 1;
+        operador = Math.random() < 0.5 ? '+' : '-';
+      } else if (nivelSeleccionado === 'medio') {
+        // Sumas, restas y multiplicaciones del 1 al 20
+        numero1 = Math.floor(Math.random() * 20) + 1;
+        numero2 = Math.floor(Math.random() * 20) + 1;
+        const opciones = ['+', '-', '*'];
+        operador = opciones[Math.floor(Math.random() * opciones.length)];
+      } else if (nivelSeleccionado === 'dificil') {
+        // Multiplicaciones y divisiones del 1 al 50
+        operador = Math.random() < 0.5 ? '*' : '/';
+        if (operador === '*') {
+          numero1 = Math.floor(Math.random() * 50) + 1;
+          numero2 = Math.floor(Math.random() * 50) + 1;
+        } else {
+          // Para la división, aseguramos que el resultado sea un número entero
+          numero2 = Math.floor(Math.random() * 10) + 1;
+          respuestaCorrecta = Math.floor(Math.random() * 50) + 1;
+          numero1 = numero2 * respuestaCorrecta;
+        }
+      }
+
+      // Calcular la respuesta correcta según el operador (excepto en división ya calculada)
+      if (operador !== '/') {
+        if (operador === '+') respuestaCorrecta = numero1 + numero2;
+        if (operador === '-') respuestaCorrecta = numero1 - numero2;
+        if (operador === '*') respuestaCorrecta = numero1 * numero2;
+      } else {
+        respuestaCorrecta = numero1 / numero2;
+      }
+
+      // Mostrar la operación en pantalla
+      operacionEl.textContent = `${numero1} ${operador} ${numero2}`;
+      respuestaInput.value = '';
+      respuestaInput.focus();
+    }
+
+    // ============================================
+    // BOTÓN "RESPONDER"
+    // ============================================
+    btnResponder.addEventListener('click', () => {
+      responderPregunta();
+    });
+
+    // Permitir responder también con la tecla "Enter"
+    respuestaInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        responderPregunta();
+      }
+    });
+
+    function responderPregunta() {
+      const valorIngresado = respuestaInput.value.trim();
+
+      // Validar que el usuario haya ingresado un número
+      if (valorIngresado === '') {
+        alert('Por favor ingresa un número antes de responder.');
+        return;
+      }
+
+      const respuestaUsuario = Number(valorIngresado);
+      totalPreguntas++;
+
+      // Verificar si la respuesta es correcta
+      if (respuestaUsuario === respuestaCorrecta) {
+        puntaje += 10;
+        correctas++;
+      } else {
+        puntaje = Math.max(0, puntaje - 5); // Evita puntaje negativo
+        incorrectas++;
+      }
+
+      actualizarInterfazJuego();
+      generarOperacion();
+    }
+
+    // ============================================
+    // ACTUALIZAR PUNTAJE Y CONTADOR DE PREGUNTAS
+    // ============================================
+    function actualizarInterfazJuego() {
+      puntajeEl.textContent = puntaje;
+      preguntasEl.textContent = totalPreguntas;
+      tiempoEl.textContent = tiempoRestante;
+    }
+
+    // ============================================
+    // CRONÓMETRO REGRESIVO
+    // ============================================
+    function iniciarCronometro() {
+      // Por seguridad, limpiar cualquier intervalo anterior
+      clearInterval(intervaloTiempo);
+
+      intervaloTiempo = setInterval(() => {
+        tiempoRestante--;
+        tiempoEl.textContent = tiempoRestante;
+
+        if (tiempoRestante <= 0) {
+          clearInterval(intervaloTiempo);
+          finalizarJuego();
+        }
+      }, 1000);
+    }
+
+    // ============================================
+    // FINALIZAR JUEGO Y MOSTRAR RESULTADOS
+    // ============================================
+    function finalizarJuego() {
+      seccionJuego.style.display = 'none';
+      seccionResultados.style.display = 'block';
+
+      resPuntajeEl.textContent = puntaje;
+      resCorrectasEl.textContent = correctas;
+      resIncorrectasEl.textContent = incorrectas;
+    }
+
+    // ============================================
+    // BOTÓN "VOLVER A INTENTAR"
+    // ============================================
+    btnReintentar.addEventListener('click', () => {
+      // Reiniciar selección de nivel
+      nivelSeleccionado = null;
+      cards.forEach(c => c.classList.remove('selected'));
+
+      // Mostrar de nuevo la sección de dificultad
+      seccionResultados.style.display = 'none';
+      seccionDificultad.style.display = 'block';
+    });
+  </script>
+
+</body>
+</html>
